@@ -72,12 +72,14 @@ nav button.ativo{color:var(--prim);font-weight:700}
     <input type="date" id="dataFim" required>
     <label>Valor total (R$)</label>
     <input type="number" id="valor" min="0" step="0.01" required>
-    <label>Nº de pessoas</label>
-    <input type="number" id="pessoas" min="1" step="1" required>
     <label>Garantia (pagamento inicial)</label>
     <input type="number" id="pagamentoInicial" min="0" step="0.01" placeholder="0,00">
     <label>Pagamento final</label>
     <input type="number" id="pagamentoFinal" min="0" step="0.01" placeholder="0,00">
+    <label>Nº de pessoas</label>
+    <input type="number" id="pessoas" min="1" step="1" required>
+    <label>Finalidade da locação</label>
+<input type="text" id="finalidade" placeholder="Ex: aniversário, casamento">
     <label>WhatsApp do responsável</label>
     <input type="tel" id="whatsapp" placeholder="Ex: 31999999999">
     <label>Observações</label>
@@ -151,6 +153,7 @@ document.getElementById("form").addEventListener("submit", async e=>{
   a.valor=parseFloat(document.getElementById("valor").value);
   a.pessoas=parseInt(document.getElementById("pessoas").value,10);
   a.pagamentoInicial=parseFloat(document.getElementById("pagamentoInicial").value)||0;
+  a.finalidade=document.getElementById("finalidade").value.trim();
   a.pagamentoFinal=parseFloat(document.getElementById("pagamentoFinal").value)||0;
   a.whatsapp=document.getElementById("whatsapp").value.trim();
   a.observacoes=document.getElementById("observacoes").value.trim();
@@ -208,6 +211,7 @@ function render(idLista,itens){
     <div class="datas">${fmt(it.dataInicio)} a ${fmt(it.dataFim)} · ${it.pessoas} pessoa(s)</div>
     ${(it.pagamentoInicial||it.pagamentoFinal)?`<div class="datas">Garantia: R$ ${(it.pagamentoInicial||0).toFixed(2)} · Final: R$ ${(it.pagamentoFinal||0).toFixed(2)}</div>`:""}
     ${it.observacoes?`<div class="obs">${it.observacoes}</div>`:""}
+    ${it.finalidade?`<div class="obs">${it.finalidade}</div>`:""}
     ${z?`<a class="zap" href="${z}" target="_blank" rel="noopener">Mandar mensagem no WhatsApp</a>`:""}
     `;
     ul.appendChild(li);
