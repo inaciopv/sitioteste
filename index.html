@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TESTE — Aluguel do Sítio</title>
+<meta name="theme-color" content="#B5541A">
+<link rel="manifest" href="manifest-demo.json">
+
+<style>
+:root{--fundo:#F4F6F4;--sup:#FFF;--tx:#242420;--sub:#7A796F;--prim:#B5541A;--primc:#FBE6D3;--alerta:#B0554A;--borda:#E5E3DA;--r:14px}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--fundo);color:var(--tx);padding-bottom:78px}
+header{padding:22px 20px;background:linear-gradient(135deg,var(--prim),#8A3E12);box-shadow:0 2px 8px rgba(47,82,51,.2)}
+header h1{font-size:1.2rem;margin:0;color:#FFF;font-weight:700}
+main{padding:20px;max-width:480px;margin:0 auto}
+.tab{display:none}.tab--ativa{display:block;animation:surgir .2s ease}
+@keyframes surgir{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+h2{font-size:1.1rem;margin:0 0 18px;font-weight:700}
+h3{font-size:.88rem;color:var(--sub);margin:22px 0 10px;font-weight:600}
+label{display:block;font-size:.83rem;color:var(--sub);margin:16px 0 6px}
+label:first-of-type{margin-top:0}
+input,textarea{width:100%;padding:12px 14px;border:1px solid var(--borda);border-radius:12px;font-size:1rem;font-family:inherit;background:var(--sup);color:var(--tx);transition:border-color .15s}
+input:focus,textarea:focus{outline:none;border-color:var(--prim)}
+.botao{border:none;border-radius:12px;padding:14px 18px;font-size:.98rem;font-weight:700;cursor:pointer;width:100%;margin-top:16px;transition:transform .1s,opacity .1s}
+.botao:active{transform:scale(.98)}
+.primario{background:var(--prim);color:#FFF;box-shadow:0 2px 6px rgba(47,82,51,.25)}
+.secundario{background:var(--sup);color:var(--prim);border:1.5px solid var(--prim)}
+.feedback{min-height:20px;font-size:.85rem;margin-top:10px;color:var(--prim)}
+.resultado{margin-top:18px;padding:16px;border-radius:var(--r);border:1px solid var(--borda);background:var(--sup);font-size:.9rem}
+.resultado.ocupado{border-color:var(--alerta);background:#FBF1EF}
+.resultado.livre{border-color:var(--prim);background:var(--primc)}
+.cartoes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cartao{background:var(--sup);border:1px solid var(--borda);border-radius:var(--r);padding:16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.cartao b{display:block;font-size:1.7rem;color:var(--prim)}
+.cartao span{font-size:.75rem;color:var(--sub)}
+ul{list-style:none;margin:0;padding:0}
+li{background:var(--sup);border:1px solid var(--borda);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;font-size:.88rem;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.nome{font-weight:700}
+.datas{color:var(--sub);font-size:.8rem;margin-top:2px}
+.obs{font-size:.8rem;font-style:italic;color:var(--sub);margin-top:4px}
+.acoes{display:flex;gap:18px;margin-top:10px}
+.link{background:none;border:none;padding:0;font-size:.8rem;font-weight:700;color:var(--prim);cursor:pointer}
+.link.excluir{color:var(--alerta)}
+.zap{display:block;text-align:center;text-decoration:none;background:#25D366;color:#FFF;font-weight:700;font-size:.85rem;padding:10px 0;border-radius:12px;margin-top:10px}
+.vazia{color:var(--sub);font-size:.85rem}
+.alternador{display:flex;background:var(--primc);border-radius:999px;padding:4px;margin-bottom:16px}
+.alt-op{flex:1;border:none;background:none;padding:10px 0;border-radius:999px;font-size:.85rem;font-weight:700;color:var(--prim);cursor:pointer;transition:.15s}
+.alt-op.ativo{background:var(--prim);color:#FFF;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+details{margin-bottom:6px}
+summary{cursor:pointer;font-size:.8rem;color:var(--sub);margin-bottom:10px;list-style:none;font-weight:600}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";}
+details[open] summary::before{content:"▾ ";}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--sup);border-top:1px solid var(--borda);box-shadow:0 -2px 8px rgba(0,0,0,.04)}
+nav button{flex:1;border:none;background:none;padding:15px 0;font-size:.8rem;color:var(--sub);cursor:pointer;font-weight:500;transition:color .15s}
+nav button.ativo{color:var(--prim);font-weight:700}
+</style>
+</head>
+<body>
+<header><h1>TESTE — Aluguel do Sítio</h1></header>
+<main>
+
+<section id="tab-cadastrar" class="tab tab--ativa">
+  <h2 id="tituloForm">Novo aluguel</h2>
+  <form id="form">
+    <label>Nome de quem alugou</label>
+    <input type="text" id="nome" required>
+    <label>Início</label>
+    <input type="date" id="dataInicio" required>
+    <label>Fim</label>
+    <input type="date" id="dataFim" required>
+    <label>Valor total (R$)</label>
+    <input type="number" id="valor" min="0" step="0.01" required>
+    <label>Nº de pessoas</label>
+    <input type="number" id="pessoas" min="1" step="1" required>
+    <label>Garantia (pagamento inicial)</label>
+    <input type="number" id="pagamentoInicial" min="0" step="0.01" placeholder="0,00">
+    <label>Pagamento final</label>
+    <input type="number" id="pagamentoFinal" min="0" step="0.01" placeholder="0,00">
+    <label>WhatsApp do responsável</label>
+    <input type="tel" id="whatsapp" placeholder="Ex: 31999999999">
+    <label>Observações</label>
+    <textarea id="observacoes" rows="2" placeholder="Ex: primo do Junin"></textarea>
+    <button type="submit" id="botaoSalvar" class="botao primario">Salvar aluguel</button>
+    <button type="button" id="botaoCancelar" class="botao secundario" hidden>Cancelar edição</button>
+    <p id="feedbackForm" class="feedback"></p>
+  </form>
+</section>
+
+<section id="tab-consultar" class="tab">
+  <h2>Consultar disponibilidade</h2>
+  <div class="alternador">
+    <button type="button" class="alt-op ativo" data-modo="data">Por data</button>
+    <button type="button" class="alt-op" data-modo="nome">Por nome</button>
+  </div>
+  <div id="buscaData">
+    <label>Escolha uma data</label>
+    <input type="date" id="dataConsulta">
+  </div>
+  <div id="buscaNome" hidden>
+    <label>Digite o nome</label>
+    <input type="text" id="nomeConsulta" placeholder="Ex: João">
+  </div>
+  <div id="resultadoConsulta" class="resultado" style="display:none"></div>
+  <ul id="listaNomeConsulta"></ul>
+</section>
+
+<section id="tab-painel" class="tab">
+  <h2>Painel geral</h2>
+  <div class="cartoes">
+    <div class="cartao"><b id="resumoTotal">0</b><span>Alugueis cadastrados</span></div>
+  </div>
+  <h3>Próximos alugueis</h3>
+  <details open><summary>Ver / ocultar</summary><ul id="listaProximos"></ul></details>
+  <h3>Histórico</h3>
+  <details><summary>Ver / ocultar</summary><ul id="listaHistorico"></ul></details>
+</section>
+
+</main>
+<nav>
+  <button class="ativo" data-tab="tab-cadastrar">Cadastrar</button>
+  <button data-tab="tab-consultar">Consultar</button>
+  <button data-tab="tab-painel">Painel</button>
+</nav>
+
+<script>
+const DB_NOME="sitio-db",STORE="alugueis";
+let db, editandoId=null;
+
+function abrirBanco(){return new Promise((res,rej)=>{
+  const p=indexedDB.open(DB_NOME,1);
+  p.onupgradeneeded=e=>{const b=e.target.result;if(!b.objectStoreNames.contains(STORE))b.createObjectStore(STORE,{keyPath:"id"});};
+  p.onsuccess=e=>res(e.target.result);p.onerror=e=>rej(e.target.error);
+});}
+function salvar(a){return new Promise((res,rej)=>{const t=db.transaction(STORE,"readwrite");t.objectStore(STORE).put(a);t.oncomplete=()=>res();t.onerror=e=>rej(e.target.error);});}
+function apagar(id){return new Promise((res,rej)=>{const t=db.transaction(STORE,"readwrite");t.objectStore(STORE).delete(id);t.oncomplete=()=>res();t.onerror=e=>rej(e.target.error);});}
+function listar(){return new Promise((res,rej)=>{const t=db.transaction(STORE,"readonly");const p=t.objectStore(STORE).getAll();p.onsuccess=()=>res(p.result);p.onerror=e=>rej(e.target.error);});}
+
+function fmt(iso){const[a,m,d]=iso.split("-");return`${d}/${m}/${a}`;}
+function linkZap(a){const dig=(a.whatsapp||"").replace(/\D/g,"");if(!dig)return null;const num=dig.length<=11?"55"+dig:dig;const msg=encodeURIComponent(`Olá, ${a.nome}! Sobre o aluguel do sítio de ${fmt(a.dataInicio)} a ${fmt(a.dataFim)}...`);return`https://wa.me/${num}?text=${msg}`;}
+
+document.getElementById("form").addEventListener("submit", async e=>{
+  e.preventDefault();
+  if((await listar()).length>=1){bloquearDemo();return;}
+  const di=document.getElementById("dataInicio").value, df=document.getElementById("dataFim").value;
+  if(df<di){document.getElementById("feedbackForm").textContent="A data de fim não pode ser antes da de início.";return;}
+  const a={id:crypto.randomUUID(),criadoEm:new Date().toISOString()};
+  a.nome=document.getElementById("nome").value.trim();
+  a.dataInicio=di;a.dataFim=df;
+  a.valor=parseFloat(document.getElementById("valor").value);
+  a.pessoas=parseInt(document.getElementById("pessoas").value,10);
+  a.pagamentoInicial=parseFloat(document.getElementById("pagamentoInicial").value)||0;
+  a.pagamentoFinal=parseFloat(document.getElementById("pagamentoFinal").value)||0;
+  a.whatsapp=document.getElementById("whatsapp").value.trim();
+  a.observacoes=document.getElementById("observacoes").value.trim();
+  await salvar(a);
+  await atualizarPainel();
+  bloquearDemo();
+});
+function bloquearDemo(){
+  document.getElementById("form").querySelectorAll("input,textarea,button").forEach(el=>el.disabled=true);
+  document.getElementById("feedbackForm").textContent="Versão de teste: só é possível cadastrar 1 aluguel. Fale com quem te enviou pra versão completa.";
+}
+
+
+
+document.querySelectorAll(".alt-op").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".alt-op").forEach(x=>x.classList.remove("ativo"));
+    b.classList.add("ativo");
+    const porData=b.dataset.modo==="data";
+    buscaData.hidden=!porData;buscaNome.hidden=porData;
+    resultadoConsulta.style.display="none";listaNomeConsulta.innerHTML="";
+  });
+});
+document.getElementById("nomeConsulta").addEventListener("input", async e=>{
+  const termo=e.target.value.trim().toLowerCase();
+  const ul=document.getElementById("listaNomeConsulta");
+  if(!termo){ul.innerHTML="";return;}
+  const achados=(await listar()).filter(a=>a.nome.toLowerCase().includes(termo));
+  render("listaNomeConsulta",achados);
+});
+
+document.getElementById("dataConsulta").addEventListener("change", async e=>{
+  const d=e.target.value, res=document.getElementById("resultadoConsulta");
+  if(!d){res.style.display="none";return;}
+  res.style.display="block";
+  const ocup=(await listar()).find(a=>d>=a.dataInicio&&d<=a.dataFim);
+  if(ocup){res.className="resultado ocupado";res.textContent=`Ocupado — ${ocup.nome} (${fmt(ocup.dataInicio)} a ${fmt(ocup.dataFim)})`;}
+  else{res.className="resultado livre";res.textContent="Livre nessa data.";}
+});
+
+async function atualizarPainel(){
+  const todos=await listar(), hoje=new Date().toISOString().slice(0,10);
+  const prox=todos.filter(a=>a.dataFim>=hoje).sort((a,b)=>a.dataInicio.localeCompare(b.dataInicio));
+  const hist=todos.filter(a=>a.dataFim<hoje).sort((a,b)=>b.dataInicio.localeCompare(a.dataInicio));
+  resumoTotal.textContent=todos.length;
+  render("listaProximos",prox);render("listaHistorico",hist);
+}
+function render(idLista,itens){
+  const ul=document.getElementById(idLista);ul.innerHTML="";
+  if(!itens.length){ul.innerHTML='<li class="vazia">Nada por aqui.</li>';return;}
+  for(const it of itens){
+    const li=document.createElement("li");
+    const z=linkZap(it);
+    li.innerHTML=`<div class="nome">${it.nome} — R$ ${it.valor.toFixed(2)}</div>
+    <div class="datas">${fmt(it.dataInicio)} a ${fmt(it.dataFim)} · ${it.pessoas} pessoa(s)</div>
+    ${(it.pagamentoInicial||it.pagamentoFinal)?`<div class="datas">Garantia: R$ ${(it.pagamentoInicial||0).toFixed(2)} · Final: R$ ${(it.pagamentoFinal||0).toFixed(2)}</div>`:""}
+    ${it.observacoes?`<div class="obs">${it.observacoes}</div>`:""}
+    ${z?`<a class="zap" href="${z}" target="_blank" rel="noopener">Mandar mensagem no WhatsApp</a>`:""}
+    `;
+    ul.appendChild(li);
+  }
+}
+
+// Exportar / Importar
+
+document.querySelectorAll("nav button").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("tab--ativa"));
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("ativo"));
+    document.getElementById(b.dataset.tab).classList.add("tab--ativa");
+    b.classList.add("ativo");
+    if(b.dataset.tab==="tab-painel")atualizarPainel();
+  });
+});
+
+(async function iniciar(){db=await abrirBanco();await atualizarPainel();if((await listar()).length>=1)bloquearDemo();if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js");}})();
+</script>
+</body>
+</html>
